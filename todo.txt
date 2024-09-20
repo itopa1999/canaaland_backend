@@ -1,0 +1,3 @@
+work on the receipt download and printing
+add picture to the admin people church secreatey
+add breaddum links
