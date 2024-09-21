@@ -43,22 +43,17 @@ class Member(models.Model):
     
 
 class Question(models.Model):
-    name = models.CharField(max_length=200, blank=True,null=True)
-    email = models.EmailField(max_length=200, null=True)
-    subject= models.CharField(max_length=200, blank=True,null=True)
+    name = models.CharField(max_length=200,null=True)
+    email = models.EmailField(max_length=200, null=True,blank=True)
+    subject= models.CharField(max_length=200,null=True)
     question = models.CharField(max_length=200,null=True)
-    date= models.DateField(null=True, blank=True)
+    date= models.DateField(auto_now_add=True, null=True,blank=True)
 
     class Meta:
         ordering = ['-date']
         indexes = [
             models.Index(fields=['-date']),
         ]
-
-    def save(self, *args, **kwargs):
-        if self.date is None:
-            self.date = timezone.now()
-        return super().save(*args, **kwargs)
 
 
     def __str__(self):
@@ -79,22 +74,3 @@ class Attendance(models.Model):
     def __str__(self):
         return str(self.member)
     
-    
-class Tracking(models.Model):
-    user = models.CharField(max_length=200, blank=True,null=True) 
-    action = models.CharField(max_length=2000, blank=True,null=True)
-    color = models.CharField(max_length=10, blank=True,null=True)
-    date = models.DateTimeField(auto_now_add=True, blank=True,null=True)
-    def save(self, *args, **kwargs) -> None:
-        if self.color == None:
-            self.color = random.choice(['success', 'danger', 'warning', 'secondary','primary','dark'])
-        super().save(*args, **kwargs)
-    
-    class Meta:
-        ordering = ['-date']
-        indexes = [
-            models.Index(fields=['-date']),
-        ]
-        
-    def __str__(self):
-        return self.user
