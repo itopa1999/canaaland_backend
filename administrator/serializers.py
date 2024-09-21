@@ -65,11 +65,23 @@ class GetDepartmentSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-
     
 class GetMemberSerializer(serializers.ModelSerializer):
+    department = GetDepartmentSerializer()
     class Meta:
         model = Member
-        fields = "__all__"        
+        fields = "__all__" 
+
+
+class GetAttendanceSerializer(serializers.ModelSerializer):
+    member = GetMemberSerializer()
+    class Meta:
+        model = Attendance
+        fields = "__all__"      
         
-        
+
+
+class GetQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Question
+        fields = "__all__"  

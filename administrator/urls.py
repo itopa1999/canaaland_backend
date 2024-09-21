@@ -7,9 +7,16 @@ urlpatterns = [
     path('take/attendance/', TakeAttendanceView.as_view()),
     path('register/member/', RegisterMemberView.as_view()),
     path('get/department/', GetDepartmentView.as_view()),
-    path('list/member/', GetMembersView.as_view())
+    path('list/member/', GetMembersView.as_view()),
+    path('list/attendance/', GetAttendanceView.as_view()),
+    path('list/question/', GetQuestionView.as_view()),
+    path('download/member/', DownloadMemberCSView.as_view()),
+    path('download/attendance/', DownloadAttendanceCSView.as_view()),
 
-    # path('admin-question', GetMemberSerializer.sa_view(), name="admin-question"),
+
+
+
+    # path('admin-question', DownloadAttendanceCSView.as_view(), name="admin-question"),
     # path('admin-logout', LogoutView.as_view(template_name= "users/index.html"),name='admin-logout'),
     # path('question', question, name="question"),
     
