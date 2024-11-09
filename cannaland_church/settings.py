@@ -17,7 +17,6 @@ TEMPLATE_DIR = BASE_DIR / 'templates'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -40,7 +39,8 @@ SYSTEM_DEFINE_APPS = [
 
 APPLICATION_APPS = [
     'administrator',
-    'users'
+    'users',
+    'logec'
 ]
 
 THIRD_PARTIES_APPS = [
@@ -197,7 +197,7 @@ REST_FRAMEWORK = {
     ],
     # "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 5,
+    "PAGE_SIZE": 9,
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.FormParser',
@@ -217,3 +217,5 @@ SWAGGER_SETTINGS = {
     'USE_SESSION_AUTH': False,
     'PERSIST_AUTH': True,
 }
+
+PAYSTACK_SECRET_KEY=os.environ.get("PAYSTACK_SECRET_KEY")
