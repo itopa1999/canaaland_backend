@@ -11,6 +11,10 @@ urlpatterns = [
     path('members/details/<int:pk>/', LOGECMemberDetailsView.as_view()),
     path('comment/sermon/<int:sermon_id>/', LOGECSermonCommentView.as_view()),
     path('comment/sermon/<int:pk>/delete/', LOGECDeleteCommentView.as_view()),
+
+    path('register/new/member/', LOGECRegisterNewMemberView.as_view()),
+    path('list/new/members/', LOGECListNewMemberView.as_view()),
+    path('new/members/details/<int:pk>/', LOGECNewMemberDetailsView.as_view()),
     
     path('create/sermon/', LOGECSermonView.as_view()),
     path('delete/sermon/<int:pk>/', LOGECDeleteSermonView.as_view()),

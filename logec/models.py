@@ -13,6 +13,7 @@ class LOGECNewMember(models.Model):
     is_single = models.BooleanField(default=True)
     is_member = models.BooleanField(default=True)
     age = models.IntegerField()
+    date= models.DateTimeField(auto_now_add=True,null=True)
 
     class Meta:
         ordering = ['-id']

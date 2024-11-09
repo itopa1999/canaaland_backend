@@ -93,3 +93,16 @@ class LOGECDonationSerializer(serializers.ModelSerializer):
     class Meta:
         model = LOGECDonation
         fields = "__all__"
+
+
+
+class LOGECListNewMemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LOGECNewMember
+        fields = ['id','name','phone','branch']
+
+
+class LOGECNewMemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LOGECNewMember
+        fields = "__all__"

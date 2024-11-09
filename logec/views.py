@@ -77,7 +77,6 @@ class LOGECRegisterMemberView(generics.GenericAPIView):
 
 class LOGECListMemberView(generics.ListAPIView):
     permission_classes =[IsAuthenticated]
-    permission_classes =[IsAuthenticated]
     pagination_class = CustomPageNumberPagination
     queryset = LOGECMember.objects.all()
     serializer_class = LOGECListMemberSerializer
@@ -294,6 +293,57 @@ class LOGECDonationDetailsView(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
+
+
+class LOGECRegisterNewMemberView(generics.GenericAPIView):
+    permission_classes =[IsAuthenticated]
+    serializer_class = LOGECNewMemberSerializer
+    @swagger_auto_schema(tags=['LOGEC'])
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        return Response({
+            'message': f'Hi {instance.name}, your registration was successful',
+        }, status=status.HTTP_201_CREATED)
+    
+
+
+class LOGECListNewMemberView(generics.ListAPIView):
+    permission_classes =[IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
+    queryset = LOGECNewMember.objects.all()
+    serializer_class = LOGECListNewMemberSerializer
+
+    @swagger_auto_schema(tags=['LOGEC'])
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_query = self.request.query_params.get('search', None)
+        branch_query = self.request.query_params.get('branch', None)
+        
+        if search_query:
+            queryset = queryset.filter(
+                Q(name__icontains=search_query) |
+                Q(address__icontains=search_query) |
+                Q(phone__icontains=search_query)            )
+        if branch_query:
+            queryset = queryset.filter(branch__icontains=branch_query)
+
+        return queryset
+
+
+
+class LOGECNewMemberDetailsView(generics.RetrieveAPIView):
+    permission_classes =[IsAuthenticated]
+    queryset = LOGECNewMember.objects.all()
+    serializer_class = LOGECNewMemberSerializer
+
+    @swagger_auto_schema(tags=['LOGEC'])
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
 
 
