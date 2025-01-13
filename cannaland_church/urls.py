@@ -29,6 +29,7 @@ urlpatterns = [
     path('admins/api/', include('administrator.urls')),
     path('users/api/', include('users.urls')),
     path('logec/api/', include('logec.urls')),
+    path('gmghf/api/', include('gmghf.urls')),
 path(
         "doc/",
         include(

@@ -40,7 +40,8 @@ SYSTEM_DEFINE_APPS = [
 APPLICATION_APPS = [
     'administrator',
     'users',
-    'logec'
+    'logec',
+    'gmghf'
 ]
 
 THIRD_PARTIES_APPS = [
