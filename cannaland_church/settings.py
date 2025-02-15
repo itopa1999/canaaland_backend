@@ -40,7 +40,9 @@ SYSTEM_DEFINE_APPS = [
 APPLICATION_APPS = [
     'administrator',
     'users',
-    'logec'
+    'logec',
+    'gmghf',
+    'nysc_church'
 ]
 
 THIRD_PARTIES_APPS = [
@@ -49,7 +51,8 @@ THIRD_PARTIES_APPS = [
     "corsheaders",
     "rest_framework_simplejwt.token_blacklist",
     "rest_framework_simplejwt",
-    'drf_yasg'
+    'drf_yasg',
+    'django_filters'
     
 ]
 
@@ -139,14 +142,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
-EMAIL_BACKEND ='django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_FROM = 'caccanaanlanddccyouth@gmail.com'
-EMAIL_HOST_USER = 'caccanaanlanddccyouth@gmail.com' # this email will be used to send emails
-EMAIL_HOST_PASSWORD = 'dfsdfsdfsdf'
-
+EMAIL_FROM = 'salawulucky08071@gmail.com'
+EMAIL_HOST_USER = 'salawulucky08071@gmail.com' # this email will be used to send emails
+EMAIL_HOST_PASSWORD = 'zxyhtedwjngeqvjy'
 
 CORS_ALLOW_ALL_ORIGINS = True
 

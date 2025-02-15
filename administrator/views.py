@@ -22,6 +22,9 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.pagination import PageNumberPagination
+
+
 
 
 # Create your views here.
@@ -32,6 +35,10 @@ def is_admin(user):
 def is_secretary(user):
     return user.groups.filter(name='secretary').exists()
 
+
+class CustomPageNumberPagination(PageNumberPagination):
+    page_size = 20
+    page_size_query_param = 'page_size'
 
 class LoginView(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
@@ -138,10 +145,10 @@ class TakeAttendanceView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        date1 = datetime(2024, 9, 20).date()
-        date2 = datetime(2024, 3, 28).date()
-        date3 = datetime(2024, 3, 29).date()
-        date4 = datetime(2024, 3, 30).date()
+        date1 = datetime(2025, 3, 27).date()
+        date2 = datetime(2025, 3, 28).date()
+        date3 = datetime(2025, 3, 29).date()
+        date4 = datetime(2025, 3, 30).date()
         member = serializer.validated_data.get("member")
         day = serializer.validated_data.get("day")
         if day == 'day1':
@@ -248,7 +255,7 @@ def Validation(member):
         member = member[1:]
     else:
         member= member
-    mem = Member.objects.filter(Q(email__icontains=member) | Q(phone__icontains=member),date__year=2024).first()
+    mem = Member.objects.filter(Q(email__icontains=member) | Q(phone__icontains=member),date__year=2025).first()
     if mem is None:
         pass
     else:
@@ -281,6 +288,7 @@ class GetDepartmentView(APIView):
 
 class GetMembersView(generics.ListAPIView):
     permission_classes =[IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
     queryset = Member.objects.all()
     serializer_class = GetMemberSerializer
 
