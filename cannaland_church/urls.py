@@ -30,6 +30,8 @@ urlpatterns = [
     path('users/api/', include('users.urls')),
     path('logec/api/', include('logec.urls')),
     path('gmghf/api/', include('gmghf.urls')),
+    path('nysc_church/api/', include('nysc_church.urls')),
+    
 path(
         "doc/",
         include(
