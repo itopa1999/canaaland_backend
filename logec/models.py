@@ -4,10 +4,12 @@ from django.db import models
 
 
 class LOGECNewMember(models.Model):
+    sex =(('Male', 'Male'),('Female', 'Female'),)
     name = models.CharField(max_length=200, null=True)
     email = models.EmailField(max_length=200, null=True,blank=True)
     phone = models.IntegerField()
     address = models.CharField(max_length=200, null=True)
+    gender = models.CharField(max_length=200, blank=True,null=True,choices=sex,default='Male')
     office_address = models.CharField(max_length=200,null=True,blank=True)
     branch = models.CharField(max_length=200,default="Akure")
     is_single = models.BooleanField(default=True)

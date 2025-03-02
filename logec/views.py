@@ -10,6 +10,8 @@ from django.conf import settings
 from .serializers import  *
 from .services import BRANCHES, DEPARTMENTS
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.decorators import api_view, permission_classes
+from django.core.mail import send_mail
 # Create your views here.
 
 class CustomPageNumberPagination(PageNumberPagination):
@@ -425,3 +427,5 @@ class LOGECPaystackConfirmDepositView(APIView):
             except:
                 return Response({"error": "Payment successful, but can not complete request."}, status=status.HTTP_404_NOT_FOUND)
         return Response({"error": "Transaction verification failed."}, status=status.HTTP_400_BAD_REQUEST)
+
+

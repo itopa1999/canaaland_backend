@@ -27,7 +27,7 @@ urlpatterns = [
 
     path('list/donation/', LOGECListDonationView.as_view()),
     path('get/donation/<int:pk>/', LOGECDonationDetailsView.as_view()),
-    
+        
 
     path("paystack/deposit/", LOGECPaystackCashDepositView.as_view(), name="paystack-deposit-api"),
     path("paystack/confirm/deposit/<str:reference>", LOGECPaystackConfirmDepositView.as_view(), name="paystack-confirm-deposit"),
