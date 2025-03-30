@@ -32,7 +32,7 @@ urlpatterns = [
     path('gmghf/api/', include('gmghf.urls')),
     path('nysc_church/api/', include('nysc_church.urls')),
     
-path(
+    path(
         "doc/",
         include(
             [

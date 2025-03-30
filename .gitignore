@@ -2,3 +2,6 @@ venv
 # db.sqlite3
 todo.txt
 .env
+.vscode
+debug.log
+errors.log
