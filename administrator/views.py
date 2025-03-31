@@ -51,10 +51,18 @@ class LoginView(generics.GenericAPIView):
         
         if not User.objects.filter(email=email).exists():
             return Response(
-                {"detail": "No user associated with provided detail"},
+                {"error": "No user associated with provided detail"},
                 status=status.HTTP_400_BAD_REQUEST,
             )  
         user = get_object_or_404(User, Q(email=email))
+        
+        if user.is_active == False:
+            return Response(
+                {
+                    "error": "Account is inactive"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         
         if user.check_password(password):
             refresh = RefreshToken.for_user(user)
@@ -62,13 +70,7 @@ class LoginView(generics.GenericAPIView):
             decoded_token = AccessToken(access_token)
             expiration_time = datetime.fromtimestamp(decoded_token["exp"])
 
-            if user.is_active == False:
-                return Response(
-                    {
-                        "detail": "Account is inactive"
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+            
             # send_login_successful_email(user)
 
             return Response(
@@ -87,7 +89,7 @@ class LoginView(generics.GenericAPIView):
 
         else:
             return Response(
-                {"detail": "Credentials is incorrect"},
+                {"error": "Credentials is incorrect"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         
@@ -145,107 +147,39 @@ class TakeAttendanceView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        date1 = datetime(2025, 3, 27).date()
-        date2 = datetime(2025, 3, 28).date()
-        date3 = datetime(2025, 3, 29).date()
-        date4 = datetime(2025, 3, 30).date()
+
+        # Define the allowed dates and corresponding day values
+        valid_dates = {
+            "day1": datetime(2025, 4, 16).date(),
+            "day2": datetime(2025, 4, 17).date(),
+            "day3": datetime(2025, 4, 18).date(),
+            "day4": datetime(2025, 4, 19).date(),
+        }
+
+        server_today = timezone.now().date()
         member = serializer.validated_data.get("member")
         day = serializer.validated_data.get("day")
-        if day == 'day1':
-            if datetime.now().date() == date1:
-                mem = Validation(member)
-                if mem is not None:
-                    if Attendance.objects.filter(member__name = mem, day='Day 1').exists():
-                        return Response({
-                            'detail': 'You have already mark your attendance for Day 1.',
-                        }, status=status.HTTP_400_BAD_REQUEST)
-                    else:
-                        Attendance.objects.create(
-                            member = mem,
-                            day='Day 1'
-                        )
-                        return Response({
-                            'message': 'Congratulations you have mark your attendance for Day 1.',
-                        }, status=status.HTTP_201_CREATED)
 
-                return Response({
-                    'detail': f'We cannot find any member that is associate with this {member}, Check for typo error or Register',
-                }, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response({
-                    'detail': 'Sorry Attendance for "Day 1" is invalid.',
-                }, status=status.HTTP_400_BAD_REQUEST)
-            
-        elif day == 'day2':
-            if datetime.now().date() == date2:
-                mem = Validation(member)
-                if mem is not None:
-                    if Attendance.objects.filter(member__name = mem, day='Day 2').exists():
-                        return Response({
-                            'detail': 'You have already mark your attendance for Day 2.',
-                        }, status=status.HTTP_400_BAD_REQUEST)
-                    else:
-                        Attendance.objects.create(
-                            member = mem,
-                            day='Day 2'
-                        )
-                        return Response({
-                            'message': 'Congratulations you have mark your attendance for Day 2.',
-                        }, status=status.HTTP_201_CREATED)
-                return Response({
-                    'detail': f'We cannot find any member that is associate with this {member}, Check for typo error or Register',
-                }, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response({
-                    'detail': 'Sorry Attendance for "Day 2" is invalid.',
-                }, status=status.HTTP_400_BAD_REQUEST)
+        if day in valid_dates and server_today == valid_dates[day]:
+            mem = Validation(member)
+            if mem is not None:
+                if Attendance.objects.filter(member__name=mem, day=f'Day {day[-1]}').exists():
+                    return Response({
+                        'error': f'You have already marked your attendance for Day {day[-1]}.',
+                    }, status=status.HTTP_400_BAD_REQUEST)
 
-        elif day == 'day3':
-            if datetime.now().date() == date3:
-                mem = Validation(member)
-                if mem is not None:
-                    if Attendance.objects.filter(member__name = mem, day='Day 3').exists():
-                        return Response({
-                            'detail': 'You have already mark your attendance for Day 3.',
-                        }, status=status.HTTP_400_BAD_REQUEST)
-                    else:
-                        Attendance.objects.create(
-                            member = mem,
-                            day='Day 3'
-                        )
-                        return Response({
-                            'message': 'Congratulations you have mark your attendance for Day 3.',
-                        }, status=status.HTTP_201_CREATED)
+                Attendance.objects.create(member=mem, day=f'Day {day[-1]}')
                 return Response({
-                    'detail': f'We cannot find any member that is associate with this {member}, Check for typo error or Register',
-                }, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response({
-                    'detail': 'Sorry Attendance for "Day 3" is invalid.',
-                }, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            if datetime.now().date() == date4:
-                mem = Validation(member)
-                if mem is not None:
-                    if Attendance.objects.filter(member__name = mem, day='Day 4').exists():
-                        return Response({
-                            'detail': 'You have already mark your attendance for Day 4.',
-                        }, status=status.HTTP_400_BAD_REQUEST)
-                    else:
-                        Attendance.objects.create(
-                            member = mem,
-                            day='Day 4'
-                        )
-                        return Response({
-                            'message': 'Congratulations you have mark your attendance for Day 4.',
-                        }, status=status.HTTP_201_CREATED)
-                return Response({
-                    'detail': f'We cannot find any member that is associate with this {member}, Check for typo error or Register',
-                }, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response({
-                    'detail': 'Sorry Attendance for "Day 4" is invalid.',
-                }, status=status.HTTP_400_BAD_REQUEST)
+                    'message': f'Congratulations, you have marked your attendance for Day {day[-1]}.',
+                }, status=status.HTTP_201_CREATED)
+
+            return Response({
+                'error': f'We cannot find any member associated with "{member}". Check for typo errors or register.',
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            'error': f'Sorry, attendance for "{day}" is invalid.',
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -262,16 +196,60 @@ def Validation(member):
         return mem
 
 
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
 class RegisterMemberView(generics.GenericAPIView):
     serializer_class = RegisterMemberSerializer
     @swagger_auto_schema(tags=['ApiRequests'])
     def post(self, request):
+        today = timezone.now().date()
+
+        if not (date(2025, 4, 1) <= today <= date(2025, 4, 19)):
+            return Response(
+                {'error': 'Registrations are only allowed between April 1, 2025 to April 19, 2025.'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
+        
+        protocol = "https" if request.is_secure() else "http"
+        domain = request.get_host()
+        
+        self.send_email(request.data.get('email'), protocol, domain)
+        
+        
         return Response({
             'message': f'Hi {instance.name}, your registration was successful',
         }, status=status.HTTP_201_CREATED)
+        
+        
+    def send_email(self, recipient_email, protocol, domain):
+        if not recipient_email:
+            return 
+
+        subject = "Thanks for Registering! - Camp Details"
+        
+        context = {
+            "protocol": protocol,
+            "domain": domain
+        }
+        
+        html_message = render_to_string('canaanland/welcome_email.html', context)
+        
+        plain_message = strip_tags(html_message)  # Convert HTML to plain text
+
+        from_email = 'noreply@yourdomain.com'
+        recipient_list = [recipient_email]
+
+        try:
+            send_mail(subject, plain_message, from_email, recipient_list, fail_silently=False, html_message=html_message)
+            return "Email sent successfully"
+        except Exception as e:
+            pass
 
 
 

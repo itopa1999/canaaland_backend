@@ -142,13 +142,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
-EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_FROM = 'salawulucky08071@gmail.com'
-EMAIL_HOST_USER = 'salawulucky08071@gmail.com' # this email will be used to send emails
-EMAIL_HOST_PASSWORD = 'zxyhtedwjngeqvjy'
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+else:
+    EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
+    
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS') == 'True'
+EMAIL_FROM = os.getenv('EMAIL_FROM')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -190,14 +194,14 @@ SIMPLE_JWT = {
 }
 
 REST_FRAMEWORK = {
-    "NON_FIELD_ERRORS_KEY": "errors",
+    "NON_FIELD_ERRORS_KEY": "error",
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
     ],
-    # "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
+    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 9,
     'DEFAULT_PARSER_CLASSES': (
@@ -220,4 +224,82 @@ SWAGGER_SETTINGS = {
     'PERSIST_AUTH': True,
 }
 
+
+DRF_STANDARDIZED_ERRORS = {
+    "ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True,
+    "EXCEPTION_FORMATTER_CLASS": "cannaland_church.exception_formatter.ExceptionFormatter",
+}
+
+
 PAYSTACK_SECRET_KEY=os.environ.get("PAYSTACK_SECRET_KEY")
+
+
+
+ADMINS = [
+    ("Lucky", "starlitecodedev@gmail.com"),
+]
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "require_debug_false": {
+            "()": "django.utils.log.RequireDebugFalse",
+        },
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "debug.log",
+            "formatter": "verbose",
+        },
+        "error_file": {
+            "level": "ERROR",
+            "class": "logging.FileHandler",
+            "filename": "errors.log",
+            "formatter": "verbose",
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+            "filters": ["require_debug_false"],
+            "email_backend": "django.core.mail.backends.smtp.EmailBackend",
+            "include_html": True,
+        },
+    },
+    "formatters": {
+        "verbose": {
+            "format": "[%(asctime)s] [%(levelname)s] [%(name)s:%(lineno)d] - %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+        "standard": {
+            "format": "[%(asctime)s] [%(levelname)s] %(module)s - %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+        "json": {  # JSON formatter (optional for structured logging)
+            "format": '{"timestamp": "%(asctime)s", "level": "%(levelname)s", "module": "%(module)s", "line": %(lineno)d, "message": "%(message)s"}',
+            "datefmt": "%Y-%m-%dT%H:%M:%S",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file", "mail_admins"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "django.request": {
+            "handlers": ["console", "error_file"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
+}
