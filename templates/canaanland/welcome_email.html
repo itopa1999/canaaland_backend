@@ -1,32 +1,98 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registration Confirmation</title>
     <style>
-        body { font-family: Arial, sans-serif; color: #333; line-height: 1.6; }
-        h2 { color: #0056b3; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background: #f9f9f9; }
-        .footer { font-size: 14px; color: #777; margin-top: 20px; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        h2 {
+            color: #0056b3;
+            text-align: center;
+        }
+        p {
+            color: #444;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        ul {
+            padding: 0;
+            list-style-type: none;
+        }
+        li {
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        .rules-btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #0056b3;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .rules-btn:hover {
+            background-color: #004099;
+        }
+        .footer {
+            font-size: 14px;
+            color: #777;
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+        .contact {
+            font-weight: bold;
+            color: #222;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Thank You for Registering!</h2>
-        <p>We appreciate your submission. Here are the details of the camp:</p>
+
+    <div class="email-container">
+        <h2>🎉 Thank You for Registering!</h2>
+        <p>We appreciate your submission. Below are the details of the upcoming camp:</p>
 
         <ul>
-            <li><strong>Event Start Date:</strong> 16th April, 2025.</li>
-            <li><strong>Event End Date:</strong> 19th April, 2025.</li>
-            <li>You must arrive early.</li>
-            <li>Attendance is compulsory during the camp.</li>
-            <li>Please read the rules and regulations to ensure a smooth experience. <a href="{{ protocol }}://{{ domain }}/rules.html">click here</a></li>
-            <li>Free buses are available in: IBADAN, ILE-IFE, ILESA, AKURE, ORE, ONDO</li>
-
+            <li><strong>📅 Event Start Date:</strong> April 16, 2025</li>
+            <li><strong>📅 Event End Date:</strong> April 19, 2025</li>
+            <li>⏳ Arrive early to ensure smooth check-in.</li>
+            <li>✅ Attendance is <strong>compulsory</strong> during the camp.</li>
+            <li>🚍 <strong>Free transport available in:</strong> Ibadan, Ile-Ife, Ilesa, Akure, Ore, Ondo</li>
         </ul>
 
-        <p>For any inquiries or support, please contact:</p>
-        <p><strong>John Doe</strong> - 08064160380</p>
+        <p>📖 Please read the rules and regulations before the event:</p>
+        <p style="text-align: center;">
+            <a href="{{ protocol }}://{{ domain }}/rules.html" class="rules-btn">View Rules</a>
+        </p>
 
-        <p class="footer">Best regards, <br> Camp Organizing Team</p>
+        <p>For any inquiries or support, contact:</p>
+        <ul class="contact">
+            <li> 📞 <strong>Brother Emmanuel  </strong> - 08104877264 </li>
+            <li> 📞 <strong> bro olamide </strong> - 0810 856 3553 </li>
+        </ul>
+
+        <p class="footer">Best Regards, <br> Camp Organizing Team</p>
     </div>
+
 </body>
 </html>
