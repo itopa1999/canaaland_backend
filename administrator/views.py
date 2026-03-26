@@ -99,28 +99,37 @@ class AdminDashboard(APIView):
     permission_classes =[IsAuthenticated]
     @swagger_auto_schema(tags=['ApiRequests'])
     def get(self, request, *args, **kwargs):
-        year = datetime.now()
-        attend=Attendance.objects.filter(date__year=year.year).count()
-        member_count=Member.objects.filter(date__year=year.year).count()
-        question_count=Question.objects.filter(date__year=year.year).count()
-
-        attend_2024=Attendance.objects.filter(date__year=2024).count()
-        count_2024=Member.objects.filter(date__year=2024).count()
-        question_count_2023=Question.objects.filter(date__year=2023).count()
-        count_2023=Member.objects.filter(date__year=2023).count()
-        question_count_2024=Question.objects.filter(date__year=2024).count()
+        from django.db.models.functions import ExtractYear
+        
+        current_year = datetime.now().year
+        
+        # Get all unique years from the database
+        attendance_years = set(Attendance.objects.dates('date', 'year').values_list('date__year', flat=True))
+        member_years = set(Member.objects.dates('date', 'year').values_list('date__year', flat=True))
+        question_years = set(Question.objects.dates('date', 'year').values_list('date__year', flat=True))
+        
+        all_years = sorted(list(attendance_years | member_years | question_years), reverse=True)
+        
+        # Build response data for all years with full records
+        yearly_data = {}
+        for year in all_years:
+            attendance_records = Attendance.objects.filter(date__year=year)
+            member_records = Member.objects.filter(date__year=year)
+            question_records = Question.objects.filter(date__year=year)
+            
+            yearly_data[year] = {
+                "statistics": {
+                    "attendance_count": attendance_records.count(),
+                    "members_count": member_records.count(),
+                    "questions_count": question_records.count(),
+                }
+            }
+        
         return Response(
             {
-                "year": year,
-                "attend": attend,
-                "member_count": member_count,
-                "question_count": question_count,
-                "count_2023":count_2023,
-                'count_2024':count_2024,
-                'attend_2024':attend_2024,
-                "question_count_2023":question_count_2023,
-                'question_count_2024':question_count_2024
-                
+                "current_year": current_year,
+                "all_years": all_years,
+                "yearly_data": yearly_data
             },
             status=status.HTTP_200_OK,
         )
