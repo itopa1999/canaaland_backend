@@ -159,10 +159,10 @@ class TakeAttendanceView(generics.GenericAPIView):
 
         # Define the allowed dates and corresponding day values
         valid_dates = {
-            "day1": datetime(2025, 4, 16).date(),
-            "day2": datetime(2025, 4, 17).date(),
-            "day3": datetime(2025, 4, 18).date(),
-            "day4": datetime(2025, 4, 19).date(),
+            "day1": datetime(2026, 4, 15).date(),
+            "day2": datetime(2026, 4, 16).date(),
+            "day3": datetime(2026, 4, 17).date(),
+            "day4": datetime(2026, 4, 18).date(),
         }
 
         server_today = timezone.now().date()
@@ -198,7 +198,7 @@ def Validation(member):
         member = member[1:]
     else:
         member= member
-    mem = Member.objects.filter(Q(email__icontains=member) | Q(phone__icontains=member),date__year=2025).first()
+    mem = Member.objects.filter(Q(email__icontains=member) | Q(phone__icontains=member),date__year=2026).first()
     if mem is None:
         pass
     else:
@@ -215,9 +215,9 @@ class RegisterMemberView(generics.GenericAPIView):
     def post(self, request):
         today = timezone.now().date()
 
-        if not (date(2025, 4, 1) <= today <= date(2025, 4, 19)):
+        if not (date(2026, 4, 1) <= today <= date(2026, 4, 18)):
             return Response(
-                {'error': 'Registrations are only allowed between April 1, 2025 to April 19, 2025.'}, 
+                {'error': 'Registrations are only allowed between April 1, 2026 to April 18, 2026.'}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
             
