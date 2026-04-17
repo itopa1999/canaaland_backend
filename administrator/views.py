@@ -149,15 +149,51 @@ class CreateQuestionView(generics.GenericAPIView):
             'data': serializer.data
         }, status=status.HTTP_201_CREATED)
 
+from django.db.models import Q
+
+def normalize_phone(value: str) -> str:
+    value = value.strip()
+    
+    if value.isdigit():
+        # Normalize Nigerian format
+        if value.startswith("0"):
+            return value[1:]  # 080... → 80...
+        if value.startswith("234"):
+            return value[3:]  # 23480... → 80...
+    return value
+
+
+def get_member(member_input: str):
+    member_input = member_input.strip()
+
+    # Try email first (exact match)
+    member = Member.objects.filter(
+        email__iexact=member_input,
+        date__year=2026
+    ).first()
+
+    if member:
+        return member
+
+    # Try phone
+    normalized = normalize_phone(member_input)
+
+    member = Member.objects.filter(
+        phone=normalized,
+        date__year=2026
+    ).first()
+
+    return member  # returns None if not found
+    
 
 class TakeAttendanceView(generics.GenericAPIView):
     serializer_class = TakeAttendanceSerializer
+
     @swagger_auto_schema(tags=['ApiRequests'])
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # Define the allowed dates and corresponding day values
         valid_dates = {
             "day1": datetime(2026, 4, 15).date(),
             "day2": datetime(2026, 4, 16).date(),
@@ -166,44 +202,38 @@ class TakeAttendanceView(generics.GenericAPIView):
         }
 
         server_today = timezone.now().date()
-        member = serializer.validated_data.get("member")
+        member_input = serializer.validated_data.get("member")
         day = serializer.validated_data.get("day")
 
-        if day in valid_dates and server_today == valid_dates[day]:
-            mem = Validation(member)
-            if mem is not None:
-                if Attendance.objects.filter(member__name=mem, day=f'Day {day[-1]}').exists():
-                    return Response({
-                        'error': f'You have already marked your attendance for Day {day[-1]}.',
-                    }, status=status.HTTP_400_BAD_REQUEST)
-
-                Attendance.objects.create(member=mem, day=f'Day {day[-1]}')
-                return Response({
-                    'message': f'Congratulations, you have marked your attendance for Day {day[-1]}.',
-                }, status=status.HTTP_201_CREATED)
-
+        # Validate day and date
+        if day not in valid_dates or server_today != valid_dates[day]:
             return Response({
-                'error': f'We cannot find any member associated with "{member}". Check for typo errors or register.',
+                'error': f'Attendance for "{day}" is not allowed today.',
             }, status=status.HTTP_400_BAD_REQUEST)
 
+        # Get member
+        mem = get_member(member_input)
+        if not mem:
+            return Response({
+                'error': f'No member found for "{member_input}".',
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Extract day number safely
+        day_number = day.replace("day", "")  # "day3" → "3"
+        day_label = f"Day {day_number}"
+
+        # Check duplicate
+        if Attendance.objects.filter(member=mem, day=day_label).exists():
+            return Response({
+                'error': f'You have already marked attendance for {day_label}.',
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create attendance
+        Attendance.objects.create(member=mem, day=day_label)
+
         return Response({
-            'error': f'Sorry, attendance for "{day}" is invalid.',
-        }, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-def Validation(member):
-    if member.isdigit() and len(member) <=12:
-        member = member[1:]
-    else:
-        member= member
-    mem = Member.objects.filter(Q(email__icontains=member) | Q(phone__icontains=member),date__year=2026).first()
-    if mem is None:
-        pass
-    else:
-        return mem
-
+            'message': f'Attendance for {day_label} recorded successfully.',
+        }, status=status.HTTP_201_CREATED)
 
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
