@@ -151,39 +151,46 @@ class CreateQuestionView(generics.GenericAPIView):
 
 from django.db.models import Q
 
+import re
+
 def normalize_phone(value: str) -> str:
     value = value.strip()
-    
-    if value.isdigit():
-        # Normalize Nigerian format
-        if value.startswith("0"):
-            return value[1:]  # 080... → 80...
-        if value.startswith("234"):
-            return value[3:]  # 23480... → 80...
+
+    # Remove spaces, dashes, etc.
+    value = re.sub(r"\D", "", value)
+
+    # Nigerian normalization
+    if value.startswith("234"):
+        value = value[3:]
+    elif value.startswith("0"):
+        value = value[1:]
+
     return value
 
 
 def get_member(member_input: str):
     member_input = member_input.strip()
 
-    # Try email first (exact match)
-    member = Member.objects.filter(
-        email__iexact=member_input,
-        date__year=2026
-    ).first()
+    # 1️⃣ Handle email ONLY
+    if "@" in member_input:
+        return Member.objects.filter(
+            email__iexact=member_input,
+            date__year=2026
+        ).first()
 
-    if member:
-        return member
+    # 2️⃣ Handle phone ONLY (digits after cleaning)
+    cleaned = re.sub(r"\D", "", member_input)
 
-    # Try phone
-    normalized = normalize_phone(member_input)
+    if cleaned:  # ensures it's numeric after cleanup
+        normalized = normalize_phone(cleaned)
 
-    member = Member.objects.filter(
-        phone=normalized,
-        date__year=2026
-    ).first()
+        return Member.objects.filter(
+            phone=normalized,
+            date__year=2026
+        ).first()
 
-    return member  # returns None if not found
+    # 3️⃣ Invalid input
+    return None
     
 
 class TakeAttendanceView(generics.GenericAPIView):
